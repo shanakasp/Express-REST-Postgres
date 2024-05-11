@@ -1,5 +1,6 @@
 const user = require("../db/models/user");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 const generateToken = (payload) => {
   return jwt.sign(payload, process.env.JWT_SECRET, {
@@ -30,11 +31,13 @@ const signup = async (req, res, next) => {
   const result = newUser.toJSON();
 
   delete result.password;
-  delete result.deleteAt;
+  delete result.deletedAt;
 
   result.token = generateToken({
     id: result.id,
   });
+
+  // result.hi = 10;
 
   if (!result) {
     return res.status(400).json({
@@ -79,4 +82,41 @@ const signup = async (req, res, next) => {
   // Since this is a placeholder function, replace the above example with your actual signup logic
 };
 
-module.exports = { signup };
+const login = async (req, res, next) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({
+      status: "fail",
+      message: "Please provide email and password",
+    });
+  }
+
+  const result = await user.findOne({ where: { email } });
+  if (!result) {
+    return res.status(401).json({
+      status: "fail",
+      message: "Invalid email or password",
+    });
+  }
+
+  const isPasswordMatched = await bcrypt.compare(password, result.password);
+
+  if (!isPasswordMatched) {
+    return res.status(401).json({
+      status: "fail",
+      message: "Invalid email or password",
+    });
+  }
+  const token = generateToken({
+    id: result.id,
+  });
+
+  return res.json({
+    status: "success",
+    message: "User logged in successfully",
+    token,
+  });
+};
+
+module.exports = { signup, login };
