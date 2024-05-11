@@ -1,5 +1,6 @@
 const { DataTypes, Model } = require("sequelize");
 const sequelize = require("../../config/database");
+const bcrypt = require("bcrypt");
 
 class User extends Model {}
 
@@ -22,6 +23,17 @@ User.init(
     },
     password: {
       type: DataTypes.STRING,
+    },
+    confirmPassword: {
+      type: DataTypes.VIRTUAL,
+      set(value) {
+        if (value === this.password) {
+          const hashPasword = bcrypt.hashSync(value, 10);
+          this.setDataValue("password", hashPasword);
+        } else {
+          throw new Error("Password and Confirm Password does not match");
+        }
+      },
     },
     userType: {
       type: DataTypes.ENUM("0", "1", "2"),
