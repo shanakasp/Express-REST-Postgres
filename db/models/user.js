@@ -1,45 +1,49 @@
-const { model } = require("sequelize");
+const { DataTypes, Model } = require("sequelize");
 const sequelize = require("../../config/database");
 
-module.exports = sequelize.define(
-  "user",
+class User extends Model {}
+
+User.init(
   {
     id: {
+      type: DataTypes.INTEGER,
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
-      type: Sequelize.INTEGER,
     },
     firstName: {
-      type: Sequelize.STRING,
+      type: DataTypes.STRING,
     },
     lastName: {
-      type: Sequelize.STRING,
+      type: DataTypes.STRING,
     },
     email: {
-      type: Sequelize.STRING,
+      type: DataTypes.STRING,
     },
     password: {
-      type: Sequelize.STRING,
+      type: DataTypes.STRING,
     },
     userType: {
-      type: Sequelize.ENUM("0", "1", "2"),
+      type: DataTypes.ENUM("0", "1", "2"),
     },
     createdAt: {
       allowNull: false,
-      type: Sequelize.DATE,
+      type: DataTypes.DATE,
     },
     updatedAt: {
       allowNull: false,
-      type: Sequelize.DATE,
+      type: DataTypes.DATE,
     },
     deletedAt: {
-      type: Sequelize.DATE,
+      type: DataTypes.DATE,
     },
   },
   {
-    freezeTableName: true,
-    modelName: "user",
-    paranoid: true,
+    sequelize, // Pass the sequelize connection instance
+    modelName: "user", // Set the model name
+    tableName: "User", // Set the table name (optional)
+    paranoid: true, // Enable soft deletion (optional)
   }
 );
+
+module.exports = User; // Export the User model

@@ -1,4 +1,5 @@
-const signup = (req, res, next) => {
+const user = require("../db/models/user");
+const signup = async (req, res, next) => {
   const body = req.body;
 
   // Check if userType is not '1' or '2'
@@ -8,6 +9,26 @@ const signup = (req, res, next) => {
       message: "Invalid user type: " + body.userType,
     });
   }
+
+  const newUser = await user.create({
+    firstName: body.firstName,
+    lastName: body.lastName,
+    email: body.email,
+    password: body.password,
+    userType: body.userType,
+  });
+
+  if (!newUser) {
+    return res.status(400).json({
+      status: "fail",
+      message: "failed to create the user",
+    });
+  }
+
+  return res.status(201).json({
+    status: "success",
+    data: newUser,
+  });
 
   // If userType is valid, continue with signup logic
   // For demonstration, let's assume signup logic goes here
