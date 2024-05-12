@@ -1,6 +1,8 @@
 const user = require("../db/models/user");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const catchAsync = require("../utils/catchAsync");
+const AppError = require("../utils/appError");
 
 const generateToken = (payload) => {
   return jwt.sign(payload, process.env.JWT_SECRET, {
@@ -8,15 +10,12 @@ const generateToken = (payload) => {
   });
 };
 
-const signup = async (req, res, next) => {
+const signup = catchAsync(async (req, res, next) => {
   const body = req.body;
 
   // Check if userType is not '1' or '2'
   if (!["1", "2"].includes(body.userType)) {
-    return res.status(400).json({
-      status: "fail",
-      message: "Invalid user type: " + body.userType,
-    });
+    throw new AppError("Invalid user Type", 400);
   }
 
   const newUser = await user.create({
@@ -28,6 +27,9 @@ const signup = async (req, res, next) => {
     userType: body.userType,
   });
 
+  if (!newUser) {
+    return next(new AppError("Failed to create the user", 400));
+  }
   const result = newUser.toJSON();
 
   delete result.password;
@@ -38,13 +40,6 @@ const signup = async (req, res, next) => {
   });
 
   // result.hi = 10;
-
-  if (!result) {
-    return res.status(400).json({
-      status: "fail",
-      message: "failed to create the user",
-    });
-  }
 
   return res.status(201).json({
     status: "success",
@@ -80,33 +75,24 @@ const signup = async (req, res, next) => {
   // The above code is an example of how you might handle user signup using a database model (e.g., User) with Sequelize
 
   // Since this is a placeholder function, replace the above example with your actual signup logic
-};
+});
 
-const login = async (req, res, next) => {
+const login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({
-      status: "fail",
-      message: "Please provide email and password",
-    });
+    return next(new AppError("Please provide email and password", 400));
   }
 
   const result = await user.findOne({ where: { email } });
   if (!result) {
-    return res.status(401).json({
-      status: "fail",
-      message: "Invalid email or password",
-    });
+    return next(new AppError("Invalid Email or Password", 400));
   }
 
   const isPasswordMatched = await bcrypt.compare(password, result.password);
 
   if (!isPasswordMatched) {
-    return res.status(401).json({
-      status: "fail",
-      message: "Invalid email or password",
-    });
+    return next(new AppError("Invalid Email or Password", 400));
   }
   const token = generateToken({
     id: result.id,
@@ -117,6 +103,6 @@ const login = async (req, res, next) => {
     message: "User logged in successfully",
     token,
   });
-};
+});
 
 module.exports = { signup, login };

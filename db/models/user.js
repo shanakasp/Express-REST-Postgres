@@ -1,6 +1,7 @@
 const { DataTypes, Model } = require("sequelize");
 const sequelize = require("../../config/database");
 const bcrypt = require("bcrypt");
+const AppError = require("../../utils/appError");
 
 class User extends Model {}
 
@@ -14,29 +15,32 @@ User.init(
     },
     firstName: {
       type: DataTypes.STRING,
+      allowNull: false,
     },
     lastName: {
       type: DataTypes.STRING,
+      allowNull: false,
     },
     email: {
       type: DataTypes.STRING,
+      allowNull: false,
+      unique: {
+        name: "uniqueEmail",
+        msg: "Email already exists",
+      },
+      validate: {
+        isEmail: {
+          msg: "Invalid email format",
+        },
+      },
     },
     password: {
       type: DataTypes.STRING,
-    },
-    confirmPassword: {
-      type: DataTypes.VIRTUAL,
-      set(value) {
-        if (value === this.password) {
-          const hashPasword = bcrypt.hashSync(value, 10);
-          this.setDataValue("password", hashPasword);
-        } else {
-          throw new Error("Password and Confirm Password does not match");
-        }
-      },
+      allowNull: false,
     },
     userType: {
       type: DataTypes.ENUM("0", "1", "2"),
+      allowNull: false,
     },
     createdAt: {
       allowNull: false,
@@ -51,11 +55,19 @@ User.init(
     },
   },
   {
-    sequelize, // Pass the sequelize connection instance
-    modelName: "user", // Set the model name
-    tableName: "User", // Set the table name (optional)
-    paranoid: true, // Enable soft deletion (optional)
+    sequelize,
+    modelName: "user",
+    tableName: "User",
+    paranoid: true,
   }
 );
 
-module.exports = User; // Export the User model
+// Encrypt password before saving
+User.beforeSave(async (user, options) => {
+  if (user.changed("password")) {
+    const hashPassword = await bcrypt.hash(user.password, 10);
+    user.password = hashPassword;
+  }
+});
+
+module.exports = User;
