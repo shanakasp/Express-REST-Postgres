@@ -1,6 +1,7 @@
 require("dotenv").config({ path: `${process.cwd()}/.env` });
 const express = require("express");
 const authRouter = require("./route/authRoute");
+const projectRouter = require("./route/projectRoute");
 const AppError = require("./utils/appError");
 const globalErrorController = require("./controller/errorController");
 
@@ -18,6 +19,7 @@ app.use((req, res, next) => {
 
 // Mount authRouter under /api/v1/auth
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/projects", projectRouter);
 
 // Route not found handler
 app.all("*", (req, res, next) => {
