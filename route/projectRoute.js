@@ -1,8 +1,20 @@
-const express = require("express");
-const router = express.Router();
-const { signup, login } = require("../controller/authController");
-const { createProject } = require("../controller/projectController");
+const { authentication, restrictTo } = require("../controller/authController");
+const {
+  createProject,
+  getAllProject,
+  getProjectById,
+  updateProject,
+  deleteProject,
+} = require("../controller/projectController");
 
-router.post("/", createProject);
+const router = require("express").Router();
+
+router.route("/").post(createProject);
+
+router
+  .route("/:id")
+  .get(getProjectById)
+  .patch(updateProject)
+  .delete(deleteProject);
 
 module.exports = router;

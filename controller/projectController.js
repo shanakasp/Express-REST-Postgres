@@ -1,69 +1,110 @@
-const Project = require("../db/models/project");
+const project = require("../db/models/project");
+const user = require("../db/models/user");
+const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 
 const createProject = catchAsync(async (req, res, next) => {
-  const {
-    title,
-    description,
-    isFeatured,
-    productImage,
-    price,
-    shortDescription,
-    productUrl,
-    category,
-    tags,
-  } = req.body;
+  const body = req.body;
+  const userId = 1;
+  const newProject = await project.create({
+    title: body.title,
+    isFeatured: body.isFeatured,
+    productImage: body.productImage,
+    price: body.price,
+    shortDescription: body.shortDescription,
+    description: body.description,
+    productUrl: body.productUrl,
+    category: body.category,
+    tags: body.tags,
+    createdBy: userId,
+  });
 
-  const createdBy = 1;
+  return res.status(201).json({
+    status: "success",
+    data: newProject,
+  });
+});
 
-  try {
-    // Create a new project record
-    const newProject = await Project.create({
-      title,
-      description,
-      isFeatured,
-      productImage, // Assuming productImage is an array of strings
-      price,
-      shortDescription,
-      productUrl,
-      category, // Assuming category is an array of strings
-      tags, // Assuming tags is an array of strings
-      createdBy,
-      // Add other fields as needed based on your schema
-    });
+const getAllProject = catchAsync(async (req, res, next) => {
+  const userId = req.user.id;
+  const result = await project.findAll({
+    include: user,
+    where: { createdBy: userId },
+  });
 
-    // Return the newly created project in the response
-    res.status(201).json({
-      status: "success",
-      data: {
-        project: newProject,
-      },
-    });
-  } catch (error) {
-    // Check if the error is due to Sequelize validation failure
-    if (error.name === "SequelizeValidationError") {
-      // Extract validation error details from the error object
-      const errors = error.errors.map((err) => ({
-        field: err.path,
-        message: err.message,
-      }));
+  return res.json({
+    status: "success",
+    data: result,
+  });
+});
 
-      // Return validation error response
-      res.status(400).json({
-        status: "fail",
-        errors,
-      });
-    } else {
-      // Handle other unexpected errors
-      console.error("Error creating project:", error);
-      res.status(500).json({
-        status: "error",
-        message: "Internal server error",
-      });
-    }
+const getProjectById = catchAsync(async (req, res, next) => {
+  const projectId = req.params.id;
+  const result = await project.findByPk(projectId, { include: user });
+  if (!result) {
+    return next(new AppError("Invalid project id", 400));
   }
+  return res.json({
+    status: "success",
+    data: result,
+  });
+});
+
+const updateProject = catchAsync(async (req, res, next) => {
+  const userId = req.user.id;
+  const projectId = req.params.id;
+  const body = req.body;
+
+  const result = await project.findOne({
+    where: { id: projectId, createdBy: userId },
+  });
+
+  if (!result) {
+    return next(new AppError("Invalid project id", 400));
+  }
+
+  result.title = body.title;
+  result.productImage = body.productImage;
+  result.price = body.price;
+  result.shortDescription = body.shortDescription;
+  result.description = body.description;
+  result.productUrl = body.productUrl;
+  result.category = body.category;
+  result.tags = body.tags;
+
+  const updatedResult = await result.save();
+
+  return res.json({
+    status: "success",
+    data: updatedResult,
+  });
+});
+
+const deleteProject = catchAsync(async (req, res, next) => {
+  const userId = req.user.id;
+  const projectId = req.params.id;
+  const body = req.body;
+
+  const result = await project.findOne({
+    where: { id: projectId, createdBy: userId },
+  });
+
+  if (!result) {
+    return next(new AppError("Invalid project id", 400));
+  }
+
+  await result.destroy();
+
+  return res.json({
+    status: "success",
+    message: "Record deleted successfully",
+  });
 });
 
 module.exports = {
   createProject,
+  getAllProject,
+  getProjectById,
+  updateProject,
+  deleteProject,
 };
