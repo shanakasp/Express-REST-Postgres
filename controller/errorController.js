@@ -30,6 +30,10 @@ const globalErrorController = (err, req, res, next) => {
   error.message = err.message;
 
   // Handle Sequelize validation errors
+  if (error.name === "jsonWebTokenError") {
+    error = new AppError("Invalid JSON Web Token", 401);
+  }
+
   if (
     error.name === "SequelizeValidationError" ||
     error.name === "SequelizeUniqueConstraintError"

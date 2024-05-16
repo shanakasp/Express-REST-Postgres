@@ -9,7 +9,7 @@ const {
 
 const router = require("express").Router();
 
-router.route("/").post(createProject);
+router.route("/").post(authentication, createProject);
 
 router
   .route("/:id")
