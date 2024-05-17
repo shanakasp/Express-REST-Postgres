@@ -9,3 +9,5 @@ npx sequelize-cli db:migrate
 npx sequelize-cli db:migrate:undo
 
 npx sequelize-cli model:generate --name Project --attributes title:string
+
+Project and User
