@@ -119,17 +119,31 @@ const authentication = catchAsync(async (req, res, next) => {
       return next(new AppError("Please login to gain access ", 401));
     }
   }
+
   //token verification
   const tokenDetail = jwt.verify(idToken, process.env.JWT_SECRET);
+
   //get use detail and add
 
-  const freshUser = user.findByPk(tokenDetail.id);
+  const newUser = await user.findByPk(tokenDetail.id);
 
-  if (!freshUser) {
-    return next(new AppError("User no longer exists", 400));
+  if (!newUser) {
+    return next(new AppError("User no longer exists", 401));
   }
-  req.user = freshUser;
+  req.user = newUser;
   return next();
 });
 
-module.exports = { signup, login, authentication };
+const avoidTo = (...userType) => {
+  const check = (req, res, next) => {
+    if (!userType.includes(req.user.userType)) {
+      return next(
+        new AppError("You are not allowed to access this process", 403)
+      );
+    }
+    return next();
+  };
+  return check;
+};
+
+module.exports = { signup, login, authentication, avoidTo };

@@ -1,4 +1,4 @@
-const { authentication, restrictTo } = require("../controller/authController");
+const { authentication, avoidTo } = require("../controller/authController");
 const {
   createProject,
   getAllProject,
@@ -9,7 +9,9 @@ const {
 
 const router = require("express").Router();
 
-router.route("/").post(authentication, createProject);
+router.route("/").post(authentication, avoidTo("0"), createProject);
+
+router.route("/all").get(getAllProject);
 
 router
   .route("/:id")

@@ -5,7 +5,7 @@ const catchAsync = require("../utils/catchAsync");
 
 const createProject = catchAsync(async (req, res, next) => {
   const body = req.body;
-  const userId = 1;
+  const userId = req.user.id;
   const newProject = await project.create({
     title: body.title,
     isFeatured: body.isFeatured,
@@ -26,10 +26,10 @@ const createProject = catchAsync(async (req, res, next) => {
 });
 
 const getAllProject = catchAsync(async (req, res, next) => {
-  const userId = req.user.id;
+  const userId = 2;
   const result = await project.findAll({
     include: user,
-    where: { createdBy: userId },
+    // where: { createdBy: userId },
   });
 
   return res.json({

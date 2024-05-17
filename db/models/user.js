@@ -2,6 +2,8 @@ const { DataTypes, Model } = require("sequelize");
 const sequelize = require("../../config/database");
 const bcrypt = require("bcrypt");
 const AppError = require("../../utils/appError");
+const project = require("./project");
+const { FOREIGNKEYS } = require("sequelize/lib/query-types");
 
 class User extends Model {}
 
@@ -61,6 +63,9 @@ User.init(
     paranoid: true,
   }
 );
+
+User.hasMany(project, { foreignKey: "createdBy" });
+project.belongsTo(User, { foreignKey: "createdBy" });
 
 // Encrypt password before saving
 User.beforeSave(async (user, options) => {
