@@ -1,0 +1,174 @@
+{
+	"info": {
+		"_postman_id": "cbd92678-3b8e-42b5-b712-9cd70d7ee912",
+		"name": "Express Postgres",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25424262"
+	},
+	"item": [
+		{
+			"name": "Project",
+			"item": [
+				{
+					"name": "getAllProjects",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/projects/all",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"projects",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "save new project",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzE1OTIwMTIwLCJleHAiOjE3MjM2OTYxMjB9.bHdIjzks4ceWo4YBvG_GU6g4kYLEDKDgSxklB_ddwIo",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"Smartphone X\",\r\n    \"description\": \"A cutting-edge smartphone with advanced features.\",\r\n    \"isFeatured\": true,\r\n    \"productImage\": [\"https://example.com/product-image.jpg\"],\r\n    \"price\": 599,\r\n    \"shortDescription\": \"High-performance smartphone with a stunning display.\",\r\n    \"productUrl\": \"https://example.com/products/smartphone-x\",\r\n    \"category\": [\"Electronics\"],\r\n    \"tags\": [\"smartphone\", \"technology\", \"mobile\", \"android\"]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/v1/projects/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"projects",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getProjectbyID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/v1/projects/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"projects",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Signup",
+			"request": {
+				"auth": {
+					"type": "inherit"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n     \"firstName\" : \"Shanaka\",\r\n    \"lastName\": \"Prince\",\r\n    \"email\" : \"shanakaprince@gmail.com\",\r\n    \"password\" : \"Shanaka123@\",\r\n    \"confirmPassword\" : \"Shanaka123@\",\r\n    \"userType\" : \"1\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/v1/auth/signup",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"request": {
+				"auth": {
+					"type": "inherit"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/v1/auth/signup",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
