@@ -26,10 +26,10 @@ const createProject = catchAsync(async (req, res, next) => {
 });
 
 const getAllProject = catchAsync(async (req, res, next) => {
-  const userId = 2;
+  const userId = req.user.id;
   const result = await project.findAll({
     include: user,
-    // where: { createdBy: userId },
+    where: { createdBy: userId },
   });
 
   return res.json({

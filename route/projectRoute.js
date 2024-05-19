@@ -9,14 +9,14 @@ const {
 
 const router = require("express").Router();
 
-router.route("/").post(authentication, avoidTo("0"), createProject);
+router.route("/").post(authentication, avoidTo("1", "2"), createProject);
 
-router.route("/all").get(getAllProject);
+router.route("/all").get(authentication, getAllProject);
 
 router
   .route("/:id")
   .get(getProjectById)
-  .patch(updateProject)
-  .delete(deleteProject);
+  .patch(authentication, updateProject)
+  .delete(authentication, deleteProject);
 
 module.exports = router;
